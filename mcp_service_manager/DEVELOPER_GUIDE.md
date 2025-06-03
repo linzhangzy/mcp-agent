@@ -123,7 +123,7 @@ class YourMCPPluginClass(AbstractMCPPlugin):
     def __init__(self, mcp_config: MCPConfig):
         """
         Constructor for your plugin.
-        The mcp_config object is pre-loaded with the content of this MCP's 
+        The mcp_config object is pre-loaded with the content of this MCP's
         mcp_config.json file.
         """
         super().__init__(mcp_config)
@@ -131,7 +131,7 @@ class YourMCPPluginClass(AbstractMCPPlugin):
         # Load other configurations specific to your plugin
         self.api_key = self.mcp_config.get("api_key")
         self.target_url = self.mcp_config.get("target_url", "https://api.example.com/default")
-        
+
         logger.info(f"Plugin {self.name} initialized with target URL: {self.target_url}")
         # Perform any other setup that relies on the initial config but doesn't
         # require active connections (which should go into on_enable).

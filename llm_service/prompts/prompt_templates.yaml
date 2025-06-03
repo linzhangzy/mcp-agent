@@ -1,0 +1,19 @@
+sql_generation: |
+  Given the following database schema:
+  {schema}
+
+  And the user's question:
+  {question}
+
+  Please generate a SQL query that answers the question.
+  Only output the SQL query.
+
+summarization: |
+  Summarize the following text:
+  {text}
+
+chat_with_history: |
+  You are a helpful AI assistant.
+  {history}
+  User: {user_input}
+  Assistant:

@@ -172,7 +172,7 @@ async def install_mcp_package(
     if db is None: # Placeholder check
         logger.error(f"Database session not available for POST /install MCP: {request_data.mcp_name}.")
         raise HTTPException(status_code=status.HTTP_501_NOT_IMPLEMENTED, detail="Database session not available")
-    
+
     installer = MCPInstaller(db_session=db)
     installed_mcp = installer.install_mcp(
         mcp_name=request_data.mcp_name,
@@ -213,7 +213,7 @@ async def update_mcp_configuration(
     if db is None: # Placeholder check
         logger.error(f"Database session not available for PUT /{mcp_name}/config.")
         raise HTTPException(status_code=status.HTTP_501_NOT_IMPLEMENTED, detail="Database session not available")
-    
+
     installer = MCPInstaller(db_session=db)
     mcp_record = installer.get_installed_mcp(mcp_name=mcp_name)
     # MCPNotFoundError is handled by global handler if mcp_record is None
@@ -229,16 +229,16 @@ async def update_mcp_configuration(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Configuration file path not set for MCP '{mcp_name}'."
         )
-    
+
     config_file_path = Path(config_file_path_str)
     logger.info(f"Attempting to update config file {config_file_path} for MCP '{mcp_name}'")
-    
+
     try:
         config_file_path.parent.mkdir(parents=True, exist_ok=True)
         with open(config_file_path, 'w') as f:
             json.dump(config_update.config_json, f, indent=4)
         logger.info(f"Successfully updated config file {config_file_path} for MCP '{mcp_name}'")
-        
+
         # Note: `last_updated` field is not updated in this version.
         # If it were:
         # from datetime import datetime, timezone
@@ -259,7 +259,7 @@ async def update_mcp_configuration(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"An unexpected error occurred while updating config for '{mcp_name}': {e}"
         )
-    
+
     return mcp_record
 
 

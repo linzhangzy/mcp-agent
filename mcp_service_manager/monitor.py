@@ -30,7 +30,7 @@ class ServiceMonitor:
 
         Returns:
             A dictionary containing status information.
-            Example: {"name": "MyMCP", "is_enabled": True, "version": "1.0", 
+            Example: {"name": "MyMCP", "is_enabled": True, "version": "1.0",
                       "installed_at": "2023-01-01T12:00:00", "last_updated": "2023-01-01T12:00:00"}
 
         Raises:

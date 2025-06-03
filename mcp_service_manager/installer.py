@@ -352,7 +352,7 @@ class MCPInstaller:
                 logger.debug(f"Directory {mcp_base_dir_to_delete} deleted for MCP '{mcp_name}'.")
             else:
                 logger.warning(f"Installation directory {mcp_base_dir_to_delete} for MCP '{mcp_name}' not found. Skipping filesystem delete.")
-            
+
             logger.info(f"Deleting database record for MCP '{mcp_name}' (ID: {mcp_id_for_logging}).")
             self.db_session.delete(mcp_record)
             self.db_session.commit()

@@ -32,7 +32,7 @@ def sample_mcp_record(tmp_path: Path) -> InstalledMCP:
     mcp_name = "TestMCP"
     mcp_root_path = tmp_path / mcp_name
     mcp_root_path.mkdir(parents=True, exist_ok=True)
-    
+
     # Create a dummy config file for MCPConfig to load
     config_file = mcp_root_path / "mcp_config.json"
     with open(config_file, 'w') as f:
@@ -41,7 +41,7 @@ def sample_mcp_record(tmp_path: Path) -> InstalledMCP:
     record = MagicMock(spec=InstalledMCP)
     record.mcp_name = mcp_name
     record.local_path = str(mcp_root_path) # This is where manifest & plugin code will reside
-    record.config_file_path = str(config_file) 
+    record.config_file_path = str(config_file)
     return record
 
 @pytest.fixture
@@ -94,7 +94,7 @@ def test_load_mcp_plugin_success(plugin_loader_instance: PluginLoader, sample_mc
     """Test successful loading of a valid plugin."""
     # Setup: Create manifest and dummy plugin module inside the sample_mcp_record.local_path
     mcp_root_path = Path(sample_mcp_record.local_path)
-    
+
     manifest_content = {"entry_point": {"module": "dummy_plugin_module", "class": "DummyPlugin"}}
     with open(mcp_root_path / PluginLoader.MANIFEST_FILE_NAME, 'w') as f:
         json.dump(manifest_content, f)
@@ -102,7 +102,7 @@ def test_load_mcp_plugin_success(plugin_loader_instance: PluginLoader, sample_mc
     # Write the dummy plugin code to dummy_plugin_module.py within mcp_root_path
     with open(mcp_root_path / "dummy_plugin_module.py", 'w') as f:
         f.write(DUMMY_PLUGIN_PY_CONTENT)
-    
+
     # Also create the config file that the DummyPlugin expects
     plugin_specific_config_data = {"plugin_specific_setting": "test_value_for_plugin"}
     with open(sample_mcp_record.config_file_path, 'w') as f: # Overwrite if already created by fixture
@@ -130,7 +130,7 @@ def test_load_mcp_plugin_manifest_invalid_json(mock_file_open, plugin_loader_ins
     """Test MCPManifestError for malformed JSON in manifest."""
     # Ensure manifest file appears to exist, but content is bad
     Path(sample_mcp_record.local_path, PluginLoader.MANIFEST_FILE_NAME).touch()
-    
+
     with pytest.raises(MCPManifestError, match="Invalid JSON in manifest file"):
         plugin_loader_instance.load_mcp_plugin(sample_mcp_record)
 
@@ -145,7 +145,7 @@ def test_load_mcp_plugin_manifest_missing_keys(plugin_loader_instance: PluginLoa
     manifest_path = Path(sample_mcp_record.local_path) / PluginLoader.MANIFEST_FILE_NAME
     with open(manifest_path, 'w') as f:
         json.dump(manifest_content, f)
-    
+
     with pytest.raises(MCPManifestError, match=error_detail):
         plugin_loader_instance.load_mcp_plugin(sample_mcp_record)
 
@@ -167,11 +167,11 @@ def test_load_mcp_plugin_class_not_found(plugin_loader_instance: PluginLoader, s
     manifest_content = {"entry_point": {"module": "dummy_plugin_module", "class": "NonExistentClass"}}
     with open(mcp_root_path / PluginLoader.MANIFEST_FILE_NAME, 'w') as f:
         json.dump(manifest_content, f)
-    
+
     # Create the dummy module but without the NonExistentClass
     with open(mcp_root_path / "dummy_plugin_module.py", 'w') as f:
         f.write(DUMMY_PLUGIN_PY_CONTENT) # DummyPlugin is in here, but not NonExistentClass
-        
+
     with pytest.raises(MCPClassNotFoundError, match="Class .* not found in module"):
         plugin_loader_instance.load_mcp_plugin(sample_mcp_record)
 
@@ -212,7 +212,7 @@ def test_load_mcp_plugin_config_load_fails(plugin_loader_instance: PluginLoader,
         f.write(DUMMY_PLUGIN_PY_CONTENT)
 
     # Make config file non-existent to cause MCPConfig.load_config() to fail
-    Path(sample_mcp_record.config_file_path).unlink(missing_ok=True) 
+    Path(sample_mcp_record.config_file_path).unlink(missing_ok=True)
 
     with pytest.raises(MCPPluginInitializationError, match="Failed to load MCPConfig for plugin"):
         plugin_loader_instance.load_mcp_plugin(sample_mcp_record)
@@ -221,7 +221,7 @@ def test_load_mcp_plugin_config_load_fails(plugin_loader_instance: PluginLoader,
 def test_sys_path_management(mock_sys_path, plugin_loader_instance: PluginLoader, sample_mcp_record: InstalledMCP, dummy_plugin_code_path: Path):
     """Test that sys.path is correctly managed."""
     mcp_root_path = Path(sample_mcp_record.local_path) # This path comes from tmp_path via fixture
-    
+
     manifest_content = {"entry_point": {"module": "dummy_plugin_module", "class": "DummyPlugin"}}
     with open(mcp_root_path / PluginLoader.MANIFEST_FILE_NAME, 'w') as f:
         json.dump(manifest_content, f)
@@ -248,16 +248,16 @@ def test_sys_path_management(mock_sys_path, plugin_loader_instance: PluginLoader
     with patch('importlib.import_module', side_effect=import_module_side_effect) as mock_import:
         # Ensure path is not there before call (mock_sys_path is empty list here)
         assert str_mcp_local_path_resolved not in mock_sys_path
-        
+
         plugin_loader_instance.load_mcp_plugin(sample_mcp_record)
-        
+
         mock_import.assert_called_with("dummy_plugin_module")
-    
+
     # Ensure path is removed after call
     assert str_mcp_local_path_resolved not in sys.path
     # Also check our mock_sys_path (though the real sys.path is what matters for cleanup)
     assert str_mcp_local_path_resolved not in mock_sys_path
-    
+
 
 # Test for config file not found during MCPConfig.load_config() within plugin loader
 @patch.object(MCPConfig, 'load_config', side_effect=MCPFileNotFoundError("dummy/path/mcp_config.json"))

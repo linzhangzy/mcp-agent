@@ -1,0 +1,75 @@
+# Default model to be used if no specific model is requested
+# This should match one of the keys under a provider and model,
+# e.g., "openai_gpt_3_5_turbo" or "ollama_llama2".
+# The loader will need a convention for how this key is formed (e.g. provider_model).
+# For now, let's assume the config loader will allow fetching by a combined key or provider+model.
+default_model_id: "openai_gpt_3_5_turbo" # Example: provider_modelname
+
+llm_providers:
+  # OpenAI Provider Configuration
+  openai:
+    # API key can be a direct value (not recommended for production)
+    # or the name of an environment variable that holds the key.
+    # The loader will attempt to read this environment variable.
+    api_key_env_var: "OPENAI_API_KEY"
+    # You could also have a direct api_key field, but env_var is safer:
+    # api_key: "sk-..."
+
+    models:
+      gpt_3_5_turbo:
+        model_name: "gpt-3.5-turbo" # Actual model identifier for OpenAI API
+        # Default settings for this model (can be overridden at request time)
+        default_settings:
+          temperature: 0.7
+          max_tokens: 1500
+        # Other specific parameters for this model if needed
+        # e.g., specific base_url if using Azure OpenAI
+        # base_url: "YOUR_AZURE_OPENAI_ENDPOINT"
+
+      gpt_4:
+        model_name: "gpt-4"
+        default_settings:
+          temperature: 0.5
+          max_tokens: 2000
+
+      gpt_4_turbo:
+        model_name: "gpt-4-turbo"
+        default_settings:
+          temperature: 0.6
+          max_tokens: 4000
+
+  # Ollama Provider Configuration (Local LLMs)
+  ollama:
+    # Base URL for the Ollama server
+    base_url: "http://localhost:11434"
+    # Some Ollama instances might have keep_alive settings globally or per-request
+    # Default keep_alive for all ollama models, can be overridden per model
+    default_keep_alive: "5m"
+
+    models:
+      llama3_8b:
+        model_name: "llama3:8b" # The model tag as used by Ollama
+        # Ollama specific default settings (passed in the 'options' dictionary)
+        default_settings:
+          temperature: 0.6
+          num_ctx: 4096 # Example context window size
+          # keep_alive: "10m" # Override default keep_alive for this model
+
+      codellama_7b:
+        model_name: "codellama:7b"
+        default_settings:
+          temperature: 0.2
+          num_ctx: 8192
+
+  # Another example provider (e.g. Anthropic, not implemented)
+  # anthropic:
+  #   api_key_env_var: "ANTHROPIC_API_KEY"
+  #   models:
+  #     claude_3_opus:
+  #       model_name: "claude-3-opus-20240229"
+  #       default_settings:
+  #         temperature: 0.7
+  #         max_tokens: 2048
+
+# Global settings that might apply to all providers if not overridden
+# E.g. global_timeout: 60 (seconds)

@@ -63,7 +63,7 @@ def test_get_mcp_status_success(service_monitor_instance: ServiceMonitor, mock_d
 
     mock_db_session.query.assert_called_once_with(InstalledMCP)
     mock_db_session.query.return_value.filter_by.assert_called_once_with(mcp_name="TestMCP_Alpha")
-    
+
     assert status["name"] == sample_mcp_record_1.mcp_name
     assert status["version"] == sample_mcp_record_1.mcp_version
     assert status["is_enabled"] == sample_mcp_record_1.is_enabled
@@ -79,7 +79,7 @@ def test_get_mcp_status_not_found(service_monitor_instance: ServiceMonitor, mock
 
     with pytest.raises(MCPNotFoundError, match="MCP 'NonExistentMCP' not found."):
         service_monitor_instance.get_mcp_status(mcp_name="NonExistentMCP")
-    
+
     mock_db_session.query.assert_called_once_with(InstalledMCP)
     mock_db_session.query.return_value.filter_by.assert_called_once_with(mcp_name="NonExistentMCP")
 
@@ -87,9 +87,9 @@ def test_get_mcp_status_not_found(service_monitor_instance: ServiceMonitor, mock
 # --- Test Cases for list_all_mcp_statuses ---
 
 def test_list_all_mcp_statuses_multiple_mcps(
-    service_monitor_instance: ServiceMonitor, 
-    mock_db_session: MagicMock, 
-    sample_mcp_record_1: MagicMock, 
+    service_monitor_instance: ServiceMonitor,
+    mock_db_session: MagicMock,
+    sample_mcp_record_1: MagicMock,
     sample_mcp_record_2: MagicMock
 ):
     """Test listing statuses when multiple MCPs are installed."""
@@ -131,13 +131,13 @@ def test_get_mcp_status_timestamps_can_be_none(service_monitor_instance: Service
     mock_db_session.query.return_value.filter_by.return_value.first.return_value = sample_mcp_record_1
 
     status = service_monitor_instance.get_mcp_status(mcp_name="TestMCP_Alpha")
-    
+
     assert status["installed_at"] is None
     assert status["last_updated"] is None
 
 def test_list_all_mcp_statuses_timestamps_can_be_none(
-    service_monitor_instance: ServiceMonitor, 
-    mock_db_session: MagicMock, 
+    service_monitor_instance: ServiceMonitor,
+    mock_db_session: MagicMock,
     sample_mcp_record_1: MagicMock
 ):
     """Test listing with MCPs that might have None timestamps."""
@@ -146,7 +146,7 @@ def test_list_all_mcp_statuses_timestamps_can_be_none(
     mock_db_session.query.return_value.all.return_value = [sample_mcp_record_1]
 
     statuses = service_monitor_instance.list_all_mcp_statuses()
-    
+
     assert len(statuses) == 1
     assert statuses[0]["installed_at"] is None
     assert statuses[0]["last_updated"] is None

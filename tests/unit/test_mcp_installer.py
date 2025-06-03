@@ -57,7 +57,7 @@ def sample_installed_mcp_record(temp_base_install_path, sample_mcp_name, sample_
     mcp_version_dir = mcp_base_dir / sample_mcp_version
     content_dir = mcp_version_dir / MCPInstaller.MCP_CONTENT_DIR_NAME
     config_path = mcp_base_dir / MCPInstaller.MCP_CONFIG_FILE_NAME
-    
+
     return InstalledMCP(
         id=1,
         mcp_name=sample_mcp_name,
@@ -92,7 +92,7 @@ def dummy_targz_file_bytes():
         folder_info = tarfile.TarInfo(name="folder_in_tar")
         folder_info.type = tarfile.DIRTYPE
         tf.addfile(tarinfo=folder_info)
-        
+
         file_content_2 = b"Another dummy file in tar."
         file_info_2 = tarfile.TarInfo(name="folder_in_tar/another_dummy.tar.txt")
         file_info_2.size = len(file_content_2)
@@ -121,9 +121,9 @@ def test_download_package_success(mock_requests_get, installer_instance, tmp_pat
 
     download_url = "https://example.com/download.zip"
     target_dir = tmp_path / "downloads"
-    
+
     package_path = installer_instance._download_package(download_url, target_dir, sample_mcp_name)
-    
+
     mock_requests_get.assert_called_once_with(download_url, stream=True, timeout=30)
     mock_response.raise_for_status.assert_called_once()
     assert package_path.name == f"{sample_mcp_name}_package.zip" # Default extension logic
@@ -152,7 +152,7 @@ def test_download_package_http_error(mock_requests_get, installer_instance, tmp_
 def test_download_package_timeout(mock_requests_get, installer_instance, tmp_path, sample_mcp_name):
     """Test MCPDownloadError on request timeout."""
     mock_requests_get.side_effect = requests.exceptions.Timeout
-    
+
     download_url = "https://example.com/timeout.zip"
     target_dir = tmp_path / "downloads"
 
@@ -164,7 +164,7 @@ def test_download_package_timeout(mock_requests_get, installer_instance, tmp_pat
 def test_download_package_connection_error(mock_requests_get, installer_instance, tmp_path, sample_mcp_name):
     """Test MCPDownloadError on connection error."""
     mock_requests_get.side_effect = requests.exceptions.ConnectionError
-    
+
     download_url = "https://example.com/connection_error.zip"
     target_dir = tmp_path / "downloads"
 
@@ -259,7 +259,7 @@ def test_extract_package_non_existent_archive(installer_instance, tmp_path):
     # zipfile.ZipFile itself raises FileNotFoundError
     with pytest.raises((FileNotFoundError, MCPExtractionError)) as excinfo: # FileNotFoundError is more likely here
         installer_instance._extract_package(non_existent_file, extract_dir)
-    
+
     # If it's FileNotFoundError from zipfile/tarfile, it might not be wrapped yet by MCPExtractionError
     # depending on the implementation. The current implementation would re-raise as MCPExtractionError.
     if isinstance(excinfo.value, FileNotFoundError): # This should not happen with current code
@@ -294,9 +294,9 @@ def test_install_mcp_success(
     (temp_base_install_path / sample_mcp_name / "temp_download").mkdir(parents=True, exist_ok=True)
     dummy_downloaded_package_path.touch() # Make it seem like a file was downloaded
     mock_download.return_value = dummy_downloaded_package_path
-    
+
     # Mock _extract_package to do nothing (or simulate creation of files if needed for other checks)
-    mock_extract.return_value = None 
+    mock_extract.return_value = None
 
     # Ensure DB query for existing MCP returns None
     mock_db_session.query.return_value.filter_by.return_value.first.return_value = None

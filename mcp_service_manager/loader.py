@@ -121,7 +121,7 @@ class PluginLoader:
             sys.path.insert(0, str_mcp_local_path)
             path_added_to_sys = True
             logger.debug(f"Added {str_mcp_local_path} to sys.path for importing {module_name}")
-        
+
         plugin_module = None
         logger.debug(f"Importing module '{module_name}' for MCP {installed_mcp.mcp_name}")
         try:
@@ -188,6 +188,6 @@ class PluginLoader:
             raise MCPLoadError(
                 f"Loaded plugin '{class_name}' from '{module_name}' does not implement AbstractMCPPlugin."
             )
-        
+
         logger.info(f"Successfully loaded plugin for MCP: {installed_mcp.mcp_name} (Class: {class_name})")
         return plugin_instance

@@ -82,7 +82,7 @@ def client(test_db_session, temp_mcp_install_root):
             pass # Session closure is handled by test_db_session fixture
 
     app.dependency_overrides[mcp_api_router.dependencies[0].dependency] = override_get_db
-    
+
     yield TestClient(app) # Yield the TestClient
 
     # Teardown: Restore original path (if needed, though test scope might make it okay)
@@ -151,18 +151,18 @@ def test_mcp_full_lifecycle(
         download_url=service_to_install.download_url,
         config_template={"initial_setting": "default_value"}
     )
-    
+
     response = client.post("/api/v1/mcp/install", json=install_payload.model_dump())
     assert response.status_code == 201, response.text
     installed_mcp_data = response.json()
-    
+
     assert installed_mcp_data["mcp_name"] == mcp_name
     assert installed_mcp_data["mcp_version"] == mcp_version
     assert installed_mcp_data["is_enabled"] is True
-    
+
     # Verify mocks
     mock_download.assert_called_once_with(
-        install_payload.download_url, 
+        install_payload.download_url,
         Path(MCPInstaller.DEFAULT_BASE_INSTALL_PATH) / mcp_name / "temp_download", # Path used by installer
         mcp_name
     )
@@ -175,7 +175,7 @@ def test_mcp_full_lifecycle(
     assert db_record.mcp_name == mcp_name
     assert db_record.mcp_version == mcp_version
     assert db_record.is_enabled is True
-    
+
     # Verify file/directory structure
     expected_mcp_base_dir = temp_mcp_install_root / mcp_name
     expected_version_dir = expected_mcp_base_dir / mcp_version
@@ -233,7 +233,7 @@ def test_mcp_full_lifecycle(
     assert response.status_code == 200, response.text
     disabled_mcp_data = response.json()
     assert disabled_mcp_data["is_enabled"] is False
-    
+
     # Verify DB status
     test_db_session.refresh(db_record) # Refresh from DB
     assert db_record.is_enabled is False
@@ -247,7 +247,7 @@ def test_mcp_full_lifecycle(
     # Verify DB status
     test_db_session.refresh(db_record) # Refresh from DB
     assert db_record.is_enabled is True
-    
+
     # --- 8. DELETE /{mcp_name} ---
     response = client.delete(f"/api/v1/mcp/{mcp_name}")
     assert response.status_code == 204, response.text # No content on successful delete

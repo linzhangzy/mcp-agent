@@ -172,7 +172,7 @@ def test_service_registry_cache_expiry_exact_timing(mock_time, mock_services_dat
         # 1101.0 - 1100.0 = 1.  1 < 100 is true. So it should use cache.
         assert m.call_count == 2 # Should use cache from the previous refetch.
                                  # The key is that _last_fetch_time was updated in call 3.
-    
+
     # Verify that time.time was actually called by the registry's list_available_services
     assert mock_time.called
 
